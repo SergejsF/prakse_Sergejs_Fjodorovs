@@ -20,10 +20,18 @@ Projektā tiek izmantots `.env` fails. Piemērs:
 ```env
 PORT=3000
 DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASS=postgres
-DB_NAME=app_db
+DB_PORT=3306
+DB_USER=root
+DB_PASS=
+DB_NAME=prakse_db
+```
+
+## MySQL shēmas imports
+
+Izveidot datubāzi un tabulu no SQL shēmas:
+
+```bash
+mysql -u root -p < db/schema.sql
 ```
 
 ## Palaišana
