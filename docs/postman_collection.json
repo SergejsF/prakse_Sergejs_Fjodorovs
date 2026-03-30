@@ -1,0 +1,250 @@
+{
+  "info": {
+    "_postman_id": "user-registration-collection",
+    "name": "Lietotāja Reģistrācija",
+    "description": "Postman kolekcija lietotāja reģistrācijas testēšanai",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Derīga reģistrācija",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"jans.berzins@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Derīga reģistrācija ar pareizu e-pastu un paroli (8+ rakstzīmes)"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Parole pārāk īsa (< 8 rakstzīmes)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"anna.smirnova@example.com\",\n  \"password\": \"Pass123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Klūda: Parole ir pārāk īsa (tikai 7 rakstzīmes)"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Nederīgs e-pasta formāts (bez @)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"invalidemailcom\",\n  \"password\": \"ValidPassword123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Klūda: E-pasta formāts ir nederīgs (bez @)"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Nederīgs e-pasta formāts (bez domēna)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example\",\n  \"password\": \"ValidPassword123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Klūda: E-pasta formāts ir nederīgs (bez domēna pēcsaukuma)"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Trūkst e-pasta lauka",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"password\": \"ValidPassword123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Klūda: E-pasts ir obligāts"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Trūkst paroles lauka",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Klūda: Parole ir obligāta"
+      },
+      "response": []
+    },
+    {
+      "name": "7. E-pasts jau eksistē",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"jans.berzins@example.com\",\n  \"password\": \"AnotherPassword456\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Klūda: EMAIL_EXISTS (palaist pēc 1. testa)"
+      },
+      "response": []
+    },
+    {
+      "name": "8. Veselības pārbaude",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["health"]
+        },
+        "description": "Servera veselības pārbaude"
+      },
+      "response": []
+    },
+    {
+      "name": "9. Iegūt visus lietotājus",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Iegūt visus reģistrētos lietotājus"
+      },
+      "response": []
+    },
+    {
+      "name": "10. Derīga reģistrācija (minimāla parole - 8 rakstzīmes)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ieva.kalnina@example.com\",\n  \"password\": \"12345678\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Derīga reģistrācija ar minimālo paroles garumu (tieši 8 rakstzīmes)"
+      },
+      "response": []
+    }
+  ]
+}
