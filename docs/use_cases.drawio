@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" modified="2026-04-02T12:30:00.000Z" agent="GPT-5.3-Codex" version="24.7.17" editor="draw.io" type="device">
+  <diagram id="use-cases" name="Use Cases">
+    <mxGraphModel dx="1280" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="sys" value="Sistēma" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#f8f9fa;strokeColor=#495057;" vertex="1" parent="1">
+          <mxGeometry x="250" y="40" width="800" height="680" as="geometry" />
+        </mxCell>
+
+        <mxCell id="actor_user" value="Lietotājs" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="180" width="60" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="actor_admin" value="Administrators" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="420" width="60" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_reg" value="Reģistrēties" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;" vertex="1" parent="1">
+          <mxGeometry x="360" y="90" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_login" value="Pieteikties" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;" vertex="1" parent="1">
+          <mxGeometry x="600" y="90" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_logout" value="Izrakstīties" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;" vertex="1" parent="1">
+          <mxGeometry x="840" y="90" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_add_msg" value="Pievienot ziņu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#166534;" vertex="1" parent="1">
+          <mxGeometry x="360" y="230" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_view_msg" value="Skatīt ziņas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#166534;" vertex="1" parent="1">
+          <mxGeometry x="650" y="230" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_users" value="Skatīt lietotāju sarakstu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#92400e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="420" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_manage" value="Pārvaldīt lietotājus" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#92400e;" vertex="1" parent="1">
+          <mxGeometry x="700" y="420" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="endArrow=none;html=1;" edge="1" parent="1" source="actor_user" target="uc_reg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="endArrow=none;html=1;" edge="1" parent="1" source="actor_user" target="uc_login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="endArrow=none;html=1;" edge="1" parent="1" source="actor_user" target="uc_logout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="endArrow=none;html=1;" edge="1" parent="1" source="actor_user" target="uc_add_msg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="endArrow=none;html=1;" edge="1" parent="1" source="actor_user" target="uc_view_msg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e6" style="endArrow=none;html=1;" edge="1" parent="1" source="actor_admin" target="uc_users">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="endArrow=none;html=1;" edge="1" parent="1" source="actor_admin" target="uc_manage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="endArrow=none;html=1;dashed=1;" edge="1" parent="1" source="actor_admin" target="uc_view_msg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
