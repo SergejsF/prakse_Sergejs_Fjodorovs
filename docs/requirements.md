@@ -33,10 +33,17 @@ Izveidot vienkāršu backend sistēmu lietotāju pārvaldībai un ziņu apmaiņa
 - Pārvaldīt lietotājus (administrators)
 - Pārbaudīt sistēmas pieejamību (health)
 
-## Piezīme par pašreizējo realizāciju
-Pašreizējā koda bāzē jau ir realizēts:
-- Lietotāju reģistrācijas endpoints.
-- Lietotāju saraksta iegūšana.
-- Health pārbaude.
+## Piezīme par pašreizējo realizāciju (v0.1)
 
-Ziņu pievienošana un pilna login sistēma ir prasību daļa nākamajiem ieviešanas soļiem.
+### Šobrīd realizēts
+- `POST /users` lietotāju reģistrācija ar e-pasta validāciju un paroles hešošanu (`bcrypt`, 10 salt rounds).
+- `GET /users` lietotāju saraksts ar lapošanu (`page`, `limit`) un e-pasta filtru.
+- `GET /health` sistēmas pieejamības pārbaude.
+- Centralizēta kļūdu apstrāde (`EMAIL_EXISTS` konfliktam un iekšējām kļūdām).
+
+### Nākamie ieviešanas soļi
+- Login sistēma (pieteikšanās/izrakstīšanās).
+- Ziņu sistēma (pievienošana un saraksta skatīšana).
+- Administratora funkcijas lietotāju pārvaldībai.
+
+Tādējādi dokumentā aprakstītais funkcionalitātes apjoms ir mērķa stāvoklis, savukārt iepriekš minētais v0.1 norāda to, kas jau darbojas pašreizējā kodā.

@@ -1,25 +1,27 @@
 # Middleware dizains — pseudo kods
 
+> Svarīgi: šis dokuments apvieno esošo realizāciju un plānoto arhitektūru.
+> `validatePost` un `validateLog` apraksti ir nākamajiem ieviešanas soļiem.
+
 ## 1. Lietotāja validācijas middleware
+
+Pašreizējā kodā (`src/validators/users.js`) lietotāja validācija ir realizēta kā funkcija,
+kas pārbauda `email` un `password` (`>= 8`) un tiek izsaukta kontrolierī.
+Zemāk redzamais middleware piemērs ir mērķa variants, ja validāciju pārvieto uz middleware slāni.
 
 ```js
 function validateUser(req, res, next) {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
   const errors = [];
 
-  // Vārda validācija
-  if (!name || name.length < 2) {
-    errors.push("Name must be at least 2 characters");
-  }
-
   // E-pasta validācija
-  if (!email || !email.includes("@")) {
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errors.push("Invalid email address");
   }
 
   // Paroles validācija
-  if (!password || password.length < 6) {
-    errors.push("Password must be at least 6 characters");
+  if (!password || password.length < 8) {
+    errors.push("Password must be at least 8 characters");
   }
 
   if (errors.length > 0) {
@@ -38,6 +40,8 @@ function validateUser(req, res, next) {
 ---
 
 ## 2. Ziņas validācijas middleware
+
+Plānots nākamajam etapam (posts funkcionalitātei).
 
 ```js
 function validatePost(req, res, next) {
@@ -70,6 +74,8 @@ function validatePost(req, res, next) {
 ---
 
 ## 3. Žurnāla validācijas middleware
+
+Plānots nākamajam etapam (audit/log funkcionalitātei).
 
 ```js
 const ALLOWED_LEVELS = ["info", "warn", "error"];
@@ -104,6 +110,10 @@ function validateLog(req, res, next) {
 ---
 
 ## 4. Centralizētā kļūdu apstrādes middleware
+
+Piezīme: pašreizējā implementācijā kļūdu atbildes forma ir vienkāršota
+(`{ error: 'EMAIL_EXISTS' }` un `{ error: 'Internal server error' }`).
+Zemāk esošais variants apraksta mērķa, detalizētāku kļūdu formātu.
 
 ```js
 function errorHandler(err, req, res, next) {

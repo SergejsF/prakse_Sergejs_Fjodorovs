@@ -4,11 +4,11 @@
 
 | Lauks      | Tips          | Noteikums                              | Kļūdas ziņojums                  |
 |------------|---------------|----------------------------------------|----------------------------------|
-| `name`     | string        | Obligāts; garums ≥ 2 simboli           | "Name must be at least 2 characters" |
 | `email`    | string        | Obligāts; satur `@` un domēnu          | "Invalid email address"          |
-| `password` | string        | Obligāts; garums ≥ 6 simboli           | "Password must be at least 6 characters" |
+| `password` | string        | Obligāts; garums ≥ 8 simboli           | "Password must be at least 8 characters" |
 
-> Piezīme: esošajā kodā (`src/validators/users.js`) paroles minimums ir 8 simboli — tas ir stingrāks un pieļaujams.
+> Piezīme: pašreizējā implementācijā lietotāja modelī netiek izmantots `name` lauks.
+> Reģistrācijā tiek validēti tikai `email` un `password`.
 
 ---
 
@@ -41,3 +41,5 @@
 | `FORBIDDEN`        | 403         | Autentificētajam lietotājam nav tiesību veikt šo darbību    |
 | `DB_ERROR`         | 500         | Datubāzes kļūda — SQL vaicājums neizdevās                   |
 | `INTERNAL_ERROR`   | 500         | Neparedzēta servera kļūda                                   |
+
+> Piezīme: pašreizējā kodā `NOT_FOUND`, `UNAUTHORIZED` un `FORBIDDEN` ir plānoti kodi nākamajiem ieviešanas soļiem.

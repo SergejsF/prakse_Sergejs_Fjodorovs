@@ -1,5 +1,10 @@
 # Kopsavilkums
 
+## Projektēšanas posma saskaņošana
+- Pārskatīti visi galvenie projektēšanas dokumenti (`requirements`, `architecture`, `middleware_design`, `ui_design`, `validation_rules`).
+- Novērstas pretrunas starp dokumentāciju un pašreizējo koda realizāciju (īpaši par lietotāja lauku kopu un paroles minimālo garumu).
+- Visos būtiskajos dokumentos skaidri nošķirts: kas ir realizēts v0.1 un kas ir plānots nākamajiem ieviešanas soļiem.
+
 ## Sakārtota projekta struktūra
 - Izveidotas mapes: `src/routes`, `src/services`, `src/validators`, `src/middlewares`.
 - Maršrutu loģika atstāta `src/routes/users.js`.
@@ -14,4 +19,4 @@
 
 ## Piezīme par commit
 Ieteicamā commit ziņa:
-`Sakārtota projekta struktūra ar routes/services/validators/middlewares un centralizētu kļūdu apstrādi`
+`Dokumentācija saskaņota projektēšanas posmam: novērstas pretrunas un nošķirts realizētais/plānotais`

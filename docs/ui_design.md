@@ -1,5 +1,8 @@
 # UI Komponentu saraksts un Dizaina pamatnostādnes
 
+> Piezīme: šis UI apraksts ir mērķa stāvoklim (frontend + paplašināts backend).
+> Pašreizējā v0.1 backend realizācijā pieejami `health` un `users` endpointi.
+
 ## UI Komponenti
 
 ### Ievades lauki (Input Fields)
@@ -8,7 +11,7 @@
 |-------------------|--------------------------------------|--------------------------|
 | Text input        | Vārds, virsraksts                    | Min/max garums           |
 | Email input       | E-pasta adrese                       | Formāts ar `@`           |
-| Password input    | Parole, paroles apstiprināšana       | Minimums 6 simboli       |
+| Password input    | Parole, paroles apstiprināšana       | Minimums 8 simboli       |
 | Textarea          | Ziņas saturs                         | Nedrīkst būt tukšs       |
 | Search input      | Ziņu meklēšana sarakstā              | Neobligāts               |
 
