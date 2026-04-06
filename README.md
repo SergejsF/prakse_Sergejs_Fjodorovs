@@ -55,3 +55,14 @@ Sagaidāmā atbilde:
 ```json
 {"status":"ok"}
 ```
+
+## Testēšana
+
+Testēšanas pieeja un plāns aprakstīti dokumentā `docs/testing_strategy.md`.
+
+Dokumentā ir:
+- testu veidu salīdzinājums (unit, integration, functional, E2E) ar piemēriem;
+- projekta testēšanas stratēģija ar rīkiem (`Jest`, `Supertest`, `Postman`);
+- testu plāna tabula ar testa gadījumiem, sagaidāmajiem rezultātiem un atbildīgo personu.
+
+Pašreiz testu skripti repozitorijā vēl nav ieviesti; dokuments nosaka mērķa pieeju turpmākai ieviešanai.
