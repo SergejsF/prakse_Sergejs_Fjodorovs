@@ -29,4 +29,54 @@ async function getUsers({ email, page = 1, limit = 10 }) {
   return rows;
 }
 
-module.exports = { createUser, getUsers, pool };
+async function createPost(userId, title, content) {
+  const [result] = await pool.execute(
+    'INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)',
+    [userId, title, content]
+  );
+  return result.insertId;
+}
+
+async function getPosts({ userId = null, page = 1, limit = 10 }) {
+  const offset = (page - 1) * limit;
+  const query =
+    'SELECT * FROM posts WHERE (? IS NULL OR user_id = ?) ORDER BY id DESC LIMIT ? OFFSET ?';
+  const [rows] = await pool.execute(query, [
+    userId,
+    userId,
+    parseInt(limit),
+    parseInt(offset),
+  ]);
+  return rows;
+}
+
+async function createLog(level, message) {
+  const [result] = await pool.execute(
+    'INSERT INTO logs (level, message) VALUES (?, ?)',
+    [level, message]
+  );
+  return result.insertId;
+}
+
+async function getLogs({ level = null, page = 1, limit = 10 }) {
+  const offset = (page - 1) * limit;
+  const query =
+    'SELECT * FROM logs WHERE (? IS NULL OR level = ?) ORDER BY id DESC LIMIT ? OFFSET ?';
+  const [rows] = await pool.execute(query, [
+    level,
+    level,
+    parseInt(limit),
+    parseInt(offset),
+  ]);
+  return rows;
+}
+
+module.exports = {
+  createUser,
+  getUsers,
+  createPost,
+  getPosts,
+  createLog,
+  getLogs,
+  pool,
+};

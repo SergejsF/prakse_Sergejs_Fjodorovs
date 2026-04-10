@@ -8,6 +8,13 @@ describe('validateLog', () => {
     expect(errors).toEqual({});
   });
 
+  test('warn level passes', () => {
+    const data = { level: 'warn', message: 'Potential issue' };
+    const { isValid, errors } = validateLog(data);
+    expect(isValid).toBe(true);
+    expect(errors).toEqual({});
+  });
+
   test('invalid level fails', () => {
     const data = { level: 'debug', message: 'Ignored' };
     const { isValid, errors } = validateLog(data);
@@ -17,6 +24,13 @@ describe('validateLog', () => {
 
   test('empty message fails', () => {
     const data = { level: 'error', message: '' };
+    const { isValid, errors } = validateLog(data);
+    expect(isValid).toBe(false);
+    expect(errors).toHaveProperty('message');
+  });
+
+  test('missing message fails', () => {
+    const data = { level: 'error' };
     const { isValid, errors } = validateLog(data);
     expect(isValid).toBe(false);
     expect(errors).toHaveProperty('message');

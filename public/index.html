@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manual Validation Page</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #0b7285;
+      --danger: #c92a2a;
+      --ok: #2b8a3e;
+      --border: #d9e2ec;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 20% 0%, #e3f2fd 0%, var(--bg) 45%), var(--bg);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: 0.2px;
+    }
+
+    p.sub {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 8px 0 4px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 12px;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 10px;
+      min-height: 24px;
+      font-size: 14px;
+    }
+
+    .error { color: var(--danger); }
+    .ok { color: var(--ok); }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Form Validation Check</h1>
+    <p class="sub">Lapa manuālai validācijas un formu izkārtojuma pārbaudei.</p>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Pievienot lietotāju</h2>
+        <form id="userForm" novalidate>
+          <label for="name">Vārds</label>
+          <input id="name" name="name" type="text" />
+
+          <label for="email">E-pasts</label>
+          <input id="email" name="email" type="email" />
+
+          <label for="password">Parole</label>
+          <input id="password" name="password" type="password" />
+
+          <button type="submit">Saglabāt lietotāju</button>
+        </form>
+        <div class="result" id="userResult"></div>
+      </article>
+
+      <article class="card">
+        <h2>Pievienot ziņu</h2>
+        <form id="postForm" novalidate>
+          <label for="title">Virsraksts</label>
+          <input id="title" name="title" type="text" />
+
+          <label for="content">Saturs</label>
+          <textarea id="content" name="content"></textarea>
+
+          <button type="submit">Saglabāt ziņu</button>
+        </form>
+        <div class="result" id="postResult"></div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    function setResult(element, ok, message) {
+      element.className = ok ? 'result ok' : 'result error';
+      element.textContent = message;
+    }
+
+    document.getElementById('userForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const result = document.getElementById('userResult');
+
+      if (name.length < 2) {
+        setResult(result, false, 'Kļūda: vārds ir obligāts (min 2 simboli).');
+        return;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setResult(result, false, 'Kļūda: nepareizs e-pasta formāts.');
+        return;
+      }
+
+      if (password.length < 8) {
+        setResult(result, false, 'Kļūda: parolei jābūt vismaz 8 simboliem.');
+        return;
+      }
+
+      setResult(result, true, 'OK: lietotājs ir derīgs.');
+    });
+
+    document.getElementById('postForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const title = document.getElementById('title').value.trim();
+      const content = document.getElementById('content').value.trim();
+      const result = document.getElementById('postResult');
+
+      if (title.length < 3) {
+        setResult(result, false, 'Kļūda: virsrakstam jābūt vismaz 3 simboli.');
+        return;
+      }
+
+      if (content.length < 10) {
+        setResult(result, false, 'Kļūda: saturam jābūt vismaz 10 simboli.');
+        return;
+      }
+
+      setResult(result, true, 'OK: ziņa ir derīga.');
+    });
+  </script>
+</body>
+</html>
