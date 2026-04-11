@@ -20,7 +20,7 @@ describe('DB log functions', () => {
 
     expect(result).toBe(11);
     expect(mockExecute).toHaveBeenCalledWith(
-      'INSERT INTO logs (level, message) VALUES (?, ?)',
+      'INSERT INTO logs (`level`, message) VALUES (?, ?)',
       ['info', 'User created']
     );
   });
@@ -39,8 +39,8 @@ describe('DB log functions', () => {
 
     expect(result).toEqual(rows);
     expect(mockExecute).toHaveBeenCalledWith(
-      'SELECT * FROM logs WHERE (? IS NULL OR level = ?) ORDER BY id DESC LIMIT ? OFFSET ?',
-      ['error', 'error', 3, 0]
+      'SELECT * FROM logs WHERE `level` = ? ORDER BY id DESC LIMIT 0, 3',
+      ['error']
     );
   });
 

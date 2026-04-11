@@ -4,7 +4,8 @@ function errorHandler(err, req, res, next) {
   }
 
   console.error(err);
-  return res.status(500).json({ error: 'Internal server error' });
+  // Atgriež cilvēkam lasāmu kļūdas ziņu latviski
+  return res.status(500).json({ error: 'Iekšēja servera kļūda' });
 }
 
 module.exports = { errorHandler };

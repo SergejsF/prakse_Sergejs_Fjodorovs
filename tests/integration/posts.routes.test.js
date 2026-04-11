@@ -57,6 +57,6 @@ describe('Posts routes integration', () => {
     const response = await request(app).get('/posts');
 
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal server error' });
+    expect(response.body).toEqual({ error: 'Iekšēja servera kļūda' });
   });
 });

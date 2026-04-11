@@ -48,7 +48,7 @@ Piezīme: datubāzes izsaukumi ir izolēti ar mokiem (`mysql2/promise`), reāli 
 
 - `tests/middlewares/errorHandler.test.js`
 	- `ER_DUP_ENTRY` -> HTTP **409**, body `{ error: 'EMAIL_EXISTS' }` — **OK**
-	- Vispārīga kļūda -> HTTP **500**, body `{ error: 'Internal server error' }` — **OK**
+	- Vispārīga kļūda -> HTTP **500**, body `{ error: 'Iekšēja servera kļūda' }` — **OK**
 
 ## 4) Integration testi (Supertest)
 

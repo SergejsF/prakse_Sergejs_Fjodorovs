@@ -16,12 +16,12 @@ function validateUser(req, res, next) {
 
   // E-pasta validācija
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.push("Invalid email address");
+    errors.push("Nederīgs e-pasta formāts");
   }
 
   // Paroles validācija
   if (!password || password.length < 8) {
-    errors.push("Password must be at least 8 characters");
+    errors.push("Parolei jābūt vismaz 8 simbolu garai");
   }
 
   if (errors.length > 0) {
@@ -50,12 +50,12 @@ function validatePost(req, res, next) {
 
   // Virsraksta validācija
   if (!title || title.length < 3) {
-    errors.push("Title must be at least 3 characters");
+    errors.push("Virsrakstam jābūt vismaz 3 simbolu garam");
   }
 
   // Satura validācija
   if (!content || content.trim().length === 0) {
-    errors.push("Content is required");
+    errors.push("Saturs ir obligāts");
   }
 
   if (errors.length > 0) {
@@ -86,12 +86,12 @@ function validateLog(req, res, next) {
 
   // Līmeņa validācija
   if (!level || !ALLOWED_LEVELS.includes(level)) {
-    errors.push("Level must be one of: info, warn, error");
+    errors.push("Līmenim jābūt vienam no: info, warn, error");
   }
 
   // Darbības validācija
   if (!action || action.trim().length === 0) {
-    errors.push("Action is required");
+    errors.push("Darbība ir obligāta");
   }
 
   if (errors.length > 0) {
@@ -112,7 +112,7 @@ function validateLog(req, res, next) {
 ## 4. Centralizētā kļūdu apstrādes middleware
 
 Piezīme: pašreizējā implementācijā kļūdu atbildes forma ir vienkāršota
-(`{ error: 'EMAIL_EXISTS' }` un `{ error: 'Internal server error' }`).
+(`{ error: 'EMAIL_EXISTS' }` un `{ error: 'Iekšēja servera kļūda' }`).
 Zemāk esošais variants apraksta mērķa, detalizētāku kļūdu formātu.
 
 ```js
@@ -120,28 +120,28 @@ function errorHandler(err, req, res, next) {
   // Dublēts e-pasts (MySQL ER_DUP_ENTRY)
   if (err.code === "ER_DUP_ENTRY") {
     return res.status(409).json({
-      error: { code: "EMAIL_EXISTS", message: "Email already registered" }
+      error: { code: "EMAIL_EXISTS", message: "E-pasts jau reģistrēts" }
     });
   }
 
   // Datubāzes kļūda
   if (err.type === "DB_ERROR") {
     return res.status(500).json({
-      error: { code: "DB_ERROR", message: "Database operation failed" }
+      error: { code: "DB_ERROR", message: "Datubāzes operācija neizdevās" }
     });
   }
 
   // Nav atrasts
   if (err.type === "NOT_FOUND") {
     return res.status(404).json({
-      error: { code: "NOT_FOUND", message: err.message || "Resource not found" }
+      error: { code: "NOT_FOUND", message: err.message || "Resurss nav atrasts" }
     });
   }
 
   // Neparedzēta kļūda
   console.error(err);
   return res.status(500).json({
-    error: { code: "INTERNAL_ERROR", message: "Internal server error" }
+    error: { code: "INTERNAL_ERROR", message: "Iekšēja servera kļūda" }
   });
 }
 ```

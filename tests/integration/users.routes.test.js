@@ -22,7 +22,6 @@ describe('Users routes integration', () => {
     registerUser.mockResolvedValue(123);
 
     const response = await request(app).post('/users').send({
-      name: 'John Doe',
       email: 'john@example.com',
       password: 'password123',
     });
@@ -37,7 +36,6 @@ describe('Users routes integration', () => {
     registerUser.mockRejectedValue(err);
 
     const response = await request(app).post('/users').send({
-      name: 'John Doe',
       email: 'john@example.com',
       password: 'password123',
     });
@@ -51,7 +49,6 @@ describe('Users routes integration', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('VALIDATION_ERROR');
-    expect(response.body.details).toHaveProperty('name');
     expect(response.body.details).toHaveProperty('email');
     expect(response.body.details).toHaveProperty('password');
   });

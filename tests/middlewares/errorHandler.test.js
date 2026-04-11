@@ -30,7 +30,7 @@ describe('errorHandler middleware', () => {
     errorHandler(err, req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Iekšēja servera kļūda' });
     expect(spy).toHaveBeenCalled();
 
     spy.mockRestore();

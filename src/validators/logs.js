@@ -3,11 +3,11 @@ function validateLog(data) {
 
   const allowedLevels = ['info', 'warn', 'error'];
   if (!data.level || !allowedLevels.includes(data.level)) {
-    errors.level = 'Level must be one of: info, warn, error';
+    errors.level = 'Līmenim jābūt vienam no: info, warn, error';
   }
 
   if (!data.message || typeof data.message !== 'string' || data.message.trim().length === 0) {
-    errors.message = 'Message is required';
+    errors.message = 'Ziņojums ir obligāts';
   }
 
   return {

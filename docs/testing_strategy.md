@@ -93,7 +93,7 @@ Nodrošināt, ka API darbība atbilst dokumentētajām prasībām, kļūdas tiek
 | TC-008 | Lietotāju saraksts (`GET /users`) | Noklusētā lapošana bez parametriem | Integration | `200`, struktūra `{ data, page, limit }`, `page=1`, `limit=10` | Sergejs Fjodorovs |
 | TC-009 | Lietotāju saraksts (`GET /users`) | Lapošana ar `page=2&limit=5` | Integration | `200`, atgriež ne vairāk kā 5 ierakstus un korektus `page/limit` | Sergejs Fjodorovs |
 | TC-010 | Lietotāju saraksts (`GET /users`) | Filtrs ar `email=abc` | Functional | `200`, atgrieztie lietotāji atbilst filtram | Sergejs Fjodorovs |
-| TC-011 | Kļūdu apstrāde | Neparedzēta servera kļūda servisā/modelī | Unit | `errorHandler` atgriež `500` un `Internal server error` | Sergejs Fjodorovs |
+| TC-011 | Kļūdu apstrāde | Neparedzēta servera kļūda servisā/modelī | Unit | `errorHandler` atgriež `500` un `Iekšēja servera kļūda` | Sergejs Fjodorovs |
 | TC-012 | Validācija (`validateUser`) | Derīgi dati (`email`, `password>=8`) | Unit | `isValid=true`, `errors` tukšs | Sergejs Fjodorovs |
 | TC-013 | Validācija (`validateUser`) | Nederīgs e-pasts + īsa parole | Unit | `isValid=false`, kļūdas abiem laukiem | Sergejs Fjodorovs |
 | TC-014 | Serviss (`registerUser`) | Parole tiek hešota ar salt rounds = 10 | Unit | `bcrypt.hash` izsaukts ar `10`, modelim padots hešs | Sergejs Fjodorovs |
