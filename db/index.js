@@ -17,15 +17,21 @@ async function createUser(email, passwordHash) {
 }
 
 async function getUsers({ email, page = 1, limit = 10 }) {
-  const offset = (page - 1) * limit;
-  const query =
-    'SELECT * FROM users WHERE (? IS NULL OR email LIKE ?) LIMIT ? OFFSET ?';
-  const [rows] = await pool.execute(query, [
-    email,
-    `%${email || ''}%`,
-    parseInt(limit),
-    parseInt(offset),
-  ]);
+  const safeLimit = Math.max(1, parseInt(limit, 10) || 10);
+  const safePage = Math.max(1, parseInt(page, 10) || 1);
+  const safeOffset = (safePage - 1) * safeLimit;
+
+  let query = 'SELECT * FROM users';
+  const params = [];
+
+  if (email) {
+    query += ' WHERE email LIKE ?';
+    params.push(`%${email}%`);
+  }
+
+  query += ` LIMIT ${safeLimit} OFFSET ${safeOffset}`;
+
+  const [rows] = await pool.query(query, params);
   return rows;
 }
 
