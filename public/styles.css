@@ -152,4 +152,7 @@ button[disabled] {
 @media (max-width: 640px) {
   body { padding: 14px; }
   h1 { font-size: 24px; }
+  .grid { grid-template-columns: 1fr; }
+  .card { padding: 14px; }
+  .rowActions button { width: 100%; }
 }
