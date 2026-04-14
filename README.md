@@ -193,3 +193,11 @@ Sergejs Fjodorovs (prakse projekts)
 ## Licencija
 
 ISC
+
+## Koda pārskatīšanas vadlīnijas un Git darba plūsma
+
+- Koda pārskatīšanas vadlīnijas: [docs/code_review_guidelines.md](docs/code_review_guidelines.md)
+- Git darba plūsma (feature branch, PR): [docs/git_workflow.md](docs/git_workflow.md)
+- Pull request veidne: `.github/pull_request_template.md`
+
+Lūdzu izmantojiet šos resursus, lai pieprasītu recenzijas un sekotu komandas praktikām.
