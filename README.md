@@ -74,6 +74,41 @@ npm start
 
 Serveris tiks palaists uz porta 3001.
 
+## Izvietošana
+
+Šajā projektā iespējami vairāki izvietošanas veidi. Zemāk īsi aprakstīts, kā palaist ar Docker un lokālā VM ar Vagrant.
+
+### Docker (lokāli)
+
+- Uzbūvē attēlu no projekta saknes:
+
+    docker build -t prakse_app .
+
+- Palaid konteineri un kartē portu 3001:
+
+    docker run -p 3001:3001 prakse_app
+
+- Pārbaudiet health endpoint:
+
+    curl http://localhost:3001/health
+
+Piezīme: projektā ir pievienots `.dockerignore`, lai neiekļautu lokālās `node_modules` kopijas attēlā.
+
+### Lokāla VM ar Vagrant
+
+- Priekšnoteikumi: `vagrant` un `virtualbox` uz hosta.
+- No projekta saknes izpildiet:
+
+    vagrant up
+
+- Provision skripts instalēs Node.js un palaiž aplikāciju; piekļuve no hosta pieejama pie `http://localhost:3001/health`.
+
+### Render / Heroku (īss)
+
+- Var izmantot `Procfile` (projekta saknē) — `web: npm start`.
+- Ja izvietojat uz PaaS, nodrošiniet vides mainīgos (`.env`) un, ja nepieciešams, iestatiet `PORT` saskaņā ar hostinga prasībām.
+
+
 ## Testēšana
 
 ```bash

@@ -33,3 +33,18 @@
 Svarīgi piezīmes
 - Lietotne klausās pie porta 3001. Ja hosting serviss pieprasa izmantot vides maini `PORT`, nepieciešams modificēt `src/app.js`, lai izmantotu `process.env.PORT || 3001`.
 - Ja izmanto ārējo DB (MySQL), konfigurējiet `DATABASE_URL` vai attiecīgās vides mainīgās (`.env`) servisā.
+
+4) Lokāla VM ar Vagrant
+
+- Priekšnoteikumi: uz datora jābūt uzstādītam `vagrant` un `virtualbox` (vai citam Vagrant provider).
+- No projekta saknes izpildiet:
+
+  vagrant up
+
+- Skripts provisioning laikā uzstās `node` un palaidīs aplikāciju fonā. Pēc veiksmīgas izveides piekļuve no hosta pieejama uz `http://localhost:3001/health`.
+
+- Ja nepieciešams apturēt VM un dzēst to:
+
+  vagrant halt
+  vagrant destroy -f
+
