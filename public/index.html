@@ -18,7 +18,7 @@
     <p class="sub">Lapa manuālai validācijas un formu izkārtojuma pārbaudei.</p>
 
     <section class="grid">
-      <article class="card">
+      <article class="card fixedCard">
         <h2>Pievienot lietotāju</h2>
         <form id="userForm" novalidate>
           <label for="email">E-pasts</label>
@@ -30,9 +30,10 @@
           <button type="submit">Saglabāt lietotāju</button>
         </form>
         <div class="result" id="userResult"></div>
-        <div class="authState" id="authState">Nav autorizēta lietotāja</div>
+      </article>
 
-        <h2 style="margin-top: 18px;">Pieslēgšanās</h2>
+      <article class="card fixedCard">
+        <h2>Pieslēgšanās</h2>
         <form id="loginForm" novalidate>
           <label for="loginEmail">E-pasts</label>
           <input id="loginEmail" name="loginEmail" type="email" />
@@ -46,6 +47,12 @@
           </div>
         </form>
         <div class="result" id="loginResult"></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="authState" id="authState">Nav autorizēta lietotāja</div>
+        </div>
+        <div id="loginGreeting" class="loginGreeting">
+          <span id="greetingText"></span>
+        </div>
       </article>
 
       <article class="card">
@@ -60,6 +67,7 @@
           <button type="submit">Saglabāt ziņu</button>
         </form>
         <div class="result" id="postResult"></div>
+        <div id="postsList" class="postsList"></div>
       </article>
     </section>
   </main>
@@ -91,6 +99,20 @@
     const apiBaseUrl = getApiBaseUrl();
     let currentUserId = null;
     let currentUserEmail = null;
+
+    // Mēģināt atjaunot sesiju no localStorage
+    (function restoreSession() {
+      try {
+        const raw = localStorage.getItem('currentUser');
+        if (raw) {
+          const obj = JSON.parse(raw);
+          if (obj && obj.id) {
+            currentUserId = obj.id;
+            currentUserEmail = obj.email || null;
+          }
+        }
+      } catch (_e) {}
+    })();
 
     function setButtonLoading(btn, text) {
       if (!btn) return;
@@ -160,21 +182,209 @@
 
     function refreshAuthState() {
       const authState = document.getElementById('authState');
-      const logoutBtn = document.getElementById('logoutBtn');
+      const loginForm = document.getElementById('loginForm');
+      const loginGreeting = document.getElementById('loginGreeting');
+      const greetingText = document.getElementById('greetingText');
+      const logoutInline = document.getElementById('logoutBtnInline');
+      const logoutInlineExists = Boolean(logoutInline);
+      const logoutFormBtn = document.getElementById('logoutBtn');
 
       if (currentUserId) {
-        authState.textContent = `Autorizēts: ${currentUserEmail || 'lietotājs'}`;
-        authState.className = 'authState ok';
-        logoutBtn.disabled = false;
+        // Pēc pieslēgšanās: paslēgt pieteikšanās formu un statusu, rādīt sveicienu un izejas pogu
+        if (authState) authState.style.display = 'none';
+        if (loginForm) loginForm.style.display = 'none';
+        if (logoutFormBtn) {
+          logoutFormBtn.style.display = 'none';
+          logoutFormBtn.disabled = true;
+        }
+        if (loginGreeting) {
+          greetingText.textContent = `Sveicināts, ${currentUserEmail || 'lietotājs'}!`;
+          loginGreeting.style.display = 'block';
+        }
+        // Notīrīt vecu kļūdas ziņu pie ziņas formas pēc autorizācijas
+        try {
+          const pr = document.getElementById('postResult');
+          if (pr) {
+            pr.textContent = '';
+            pr.className = 'result';
+          }
+        } catch (_e) {}
+        // Notīrīt pieteikšanās ziņojumu, ja tas ir palicis
+        try { const lr = document.getElementById('loginResult'); if (lr) { lr.textContent = ''; lr.className = 'result'; } } catch (_e) {}
+        if (logoutInlineExists) logoutInline.style.display = 'block';
+        if (logoutInlineExists) logoutInline.disabled = false;
         return;
       }
 
-      authState.textContent = 'Nav autorizēta lietotāja';
-      authState.className = 'authState';
-      logoutBtn.disabled = true;
+      // Neautorizēts lietotājs: rādīt pieteikšanās formu un slēpt sveicienu
+      if (authState) {
+        authState.style.display = '';
+        authState.textContent = 'Nav autorizēta lietotāja';
+        authState.className = 'authState';
+      }
+      if (loginForm) loginForm.style.display = 'block';
+      if (logoutFormBtn) {
+        logoutFormBtn.style.display = 'inline-block';
+        logoutFormBtn.disabled = true;
+      }
+      if (loginGreeting) loginGreeting.style.display = 'none';
+      if (logoutInlineExists) {
+        logoutInline.style.display = 'none';
+        logoutInline.disabled = true;
+      }
     }
 
     refreshAuthState();
+
+    // Ielādēt ziņas pēc pilnīgas lapas ielādes (novērš sacensību sesijas atjaunošanas laikā)
+    window.addEventListener('load', function () {
+      try { refreshAuthState(); } catch (_e) {}
+      if (currentUserId) {
+        loadUserPosts(1).catch(() => {});
+      }
+    });
+
+    // Nodrošināt, ka pieteikšanās forma vienmēr pieejama; parādīt sveicienu, kad pieslēgts
+
+    function renderPost(post) {
+      try { console.log('renderPost ->', post && (post.id || '(no id)'), post && post.title); } catch (_e) {}
+      if (!post) return;
+      const list = document.getElementById('postsList');
+      if (!list) return;
+      const item = document.createElement('div');
+      item.className = 'postItem';
+
+      const title = document.createElement('h3');
+      title.className = 'postTitle';
+      title.textContent = post.title && post.title.trim() ? post.title : 'Bez virsraksta';
+
+      const body = document.createElement('div');
+      body.className = 'postContent';
+      const full = post.content || '';
+      let toggle = null;
+      // Tekstu ievietojam DOM, bet vizuāli ierobežojam līdz 2 rindām ar CSS
+      body.textContent = full;
+      body.dataset.full = full;
+      if (full.length > 120) {
+        body.classList.add('collapsed');
+        body.dataset.collapsed = 'true';
+        toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'toggleBtn';
+          toggle.textContent = 'Rādīt vairāk';
+        toggle.addEventListener('click', function () {
+          const collapsed = body.dataset.collapsed === 'true';
+          if (collapsed) {
+            body.classList.remove('collapsed');
+            body.dataset.collapsed = 'false';
+              toggle.textContent = 'Rādīt mazāk';
+          } else {
+            body.classList.add('collapsed');
+            body.dataset.collapsed = 'true';
+              toggle.textContent = 'Rādīt vairāk';
+          }
+        });
+      }
+
+      // Meta (datums/laiks) pievienots beigās
+      const meta = document.createElement('div');
+      meta.className = 'postMeta';
+      const created = post.createdAt || post.created_at || post.created || null;
+      const when = created ? new Date(created).toLocaleString() : new Date().toLocaleString();
+      meta.textContent = when;
+
+      item.appendChild(title);
+      item.appendChild(body);
+      if (toggle) item.appendChild(toggle);
+      item.appendChild(meta);
+
+      list.appendChild(item);
+      return item;
+    }
+
+    function clearPosts() {
+      const list = document.getElementById('postsList');
+      if (list) list.innerHTML = '';
+    }
+
+    let postsPage = 1;
+    const postsPageSize = 1;
+
+    async function renderPagination(page, hasNext) {
+      const list = document.getElementById('postsList');
+      if (!list) return;
+      let pager = document.getElementById('postsPager');
+      if (!pager) {
+        pager = document.createElement('div');
+        pager.id = 'postsPager';
+        pager.style.marginTop = '8px';
+        pager.style.display = 'flex';
+        pager.style.justifyContent = 'center';
+        pager.style.gap = '8px';
+        pager.style.alignItems = 'center';
+      }
+      pager.innerHTML = '';
+
+      const prev = document.createElement('button');
+      prev.type = 'button';
+      prev.textContent = 'Iepriekšējie';
+      prev.disabled = page <= 1;
+      prev.addEventListener('click', function () { loadUserPosts(page - 1).catch(() => {}); });
+      pager.appendChild(prev);
+
+      const next = document.createElement('button');
+      next.type = 'button';
+      next.textContent = 'Parādīt nākamās';
+      next.style.marginLeft = '8px';
+      next.disabled = !hasNext;
+      next.addEventListener('click', function () { loadUserPosts(page + 1).catch(() => {}); });
+      pager.appendChild(next);
+
+      list.appendChild(pager);
+    }
+
+    async function loadUserPosts(page = 1) {
+      try { console.log('loadUserPosts start, currentUserId=', currentUserId, 'page=', page); } catch(_e) {}
+      postsPage = page;
+      clearPosts();
+      if (!currentUserId) return;
+      try {
+        const resp = await fetch(`${apiBaseUrl}/posts?userId=${encodeURIComponent(currentUserId)}&page=${page}&limit=${postsPageSize}`);
+        try { console.log('loadUserPosts fetch status=', resp && resp.status); } catch(_e) {}
+        if (!resp.ok) {
+          const txt = await resp.text().catch(() => null);
+          try { console.error('loadUserPosts error', resp.status, txt); } catch(_e) {}
+          const list = document.getElementById('postsList');
+          if (list) {
+            const err = document.createElement('div');
+            err.className = 'result error';
+            err.textContent = 'Nevar ielādēt ziņas: servera kļūda. Klikšķiniet, lai mēģinātu vēlreiz.';
+            const retry = document.createElement('button');
+            retry.type = 'button';
+            retry.textContent = 'Mēģināt vēlreiz';
+            retry.style.marginLeft = '8px';
+            retry.addEventListener('click', function () { loadUserPosts(page).catch(()=>{}); });
+            err.appendChild(retry);
+            list.appendChild(err);
+          }
+          return;
+        }
+
+        const body = await resp.json().catch(() => null);
+        let arr = [];
+        if (Array.isArray(body)) arr = body;
+        else if (body && Array.isArray(body.data)) arr = body.data;
+        try { console.log('loadUserPosts got posts count=', Array.isArray(arr) ? arr.length : 'not-array'); } catch(_e) {}
+        if (!Array.isArray(arr)) return;
+
+        arr.forEach(renderPost);
+
+        const hasNext = arr.length === postsPageSize;
+        await renderPagination(page, hasNext);
+      } catch (_e) {
+        // Ignorēt
+      }
+    }
 
     document.getElementById('userForm').addEventListener('submit', async function (event) {
       event.preventDefault();
@@ -214,9 +424,20 @@
         if (resp.status === 201) {
           currentUserId = body.id || null;
           currentUserEmail = email;
+          try { localStorage.setItem('currentUser', JSON.stringify({ id: currentUserId, email: currentUserEmail })); } catch (_e) {}
           refreshAuthState();
           setResult(result, true, 'Lietotājs ir veiksmīgi izveidots.');
+          // Notīrīt formu laukus (pieslēgšanās veiksmīga, sveiciens parādīts)
+          try {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            if (emailInput) emailInput.value = '';
+            if (passwordInput) passwordInput.value = '';
+          } catch (_e) {}
           await writeLog('info', `Lietotājs reģistrēts: ${email}`);
+          // Notīrīt iespējamos pieteikšanās ziņojumus (piem., nepareizs e-pasts)
+          try { const lr = document.getElementById('loginResult'); if (lr) { lr.textContent = ''; lr.className = 'result'; } } catch (_e) {}
+          try { await loadUserPosts(1); } catch (_e) {}
         } else if (resp.status === 400) {
           applyRegistrationServerErrors(body.details || body);
           setResult(result, false, `VALIDĀCIJA: ${JSON.stringify(body.details || body)}`);
@@ -269,9 +490,11 @@
         if (resp.status === 200) {
           currentUserId = body.id;
           currentUserEmail = body.email;
+          try { localStorage.setItem('currentUser', JSON.stringify({ id: currentUserId, email: currentUserEmail })); } catch (_e) {}
           refreshAuthState();
           setResult(result, true, 'Pieslēgšanās veiksmīga.');
           await writeLog('info', `Lietotājs pieslēdzās: ${body.email}`);
+          try { await loadUserPosts(1); } catch (_e) {}
         } else if (resp.status === 401) {
           setFieldError(emailInput, true);
           setFieldError(passwordInput, true);
@@ -292,16 +515,51 @@
       }
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', function () {
+    function doLogout() {
       const previousEmail = currentUserEmail;
       currentUserId = null;
       currentUserEmail = null;
+      try { localStorage.removeItem('currentUser'); } catch (_e) {}
       refreshAuthState();
-      setResult(document.getElementById('loginResult'), true, 'Lietotājs ir atvienots.');
+      // Notīrīt ziņu sarakstu pēc iziešanas
+      try { clearPosts(); } catch (_e) {}
+      const lrEl = document.getElementById('loginResult');
+      setResult(lrEl, true, 'Lietotājs ir atvienots.');
+      try { if (lrEl) { lrEl.classList.add('manual-red'); } } catch(_e) {}
       if (previousEmail) {
         writeLog('info', `Lietotājs atvienojās: ${previousEmail}`);
       }
-    });
+    }
+
+    // Pievienot iziešanas funkciju pie pogām
+    (function attachLogoutButtons() {
+      const ids = ['logoutBtn', 'logoutBtnInline'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', doLogout);
+      });
+    })();
+
+    // Nodrošināt, ka iziešanas poga ir pieteikšanās kartē (apakšējā labajā stūrī)
+    (function ensureInlineLogout() {
+      const greeting = document.getElementById('loginGreeting');
+      if (!greeting) return;
+      let btn = document.getElementById('logoutBtnInline');
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.id = 'logoutBtnInline';
+        btn.type = 'button';
+        btn.className = 'secondaryBtn';
+        btn.textContent = 'Iziet';
+        btn.style.display = currentUserId ? 'block' : 'none';
+        greeting.appendChild(btn);
+        btn.addEventListener('click', doLogout);
+      } else {
+        btn.style.display = currentUserId ? 'block' : 'none';
+        if (!greeting.contains(btn)) greeting.appendChild(btn);
+      }
+      try { refreshAuthState(); } catch (_e) {}
+    })();
 
     document.getElementById('postForm').addEventListener('submit', async function (event) {
       event.preventDefault();
@@ -313,6 +571,11 @@
 
       clearPostErrors();
 
+      if (!currentUserId) {
+        setResult(result, false, 'Kļūda: vispirms ienāciet ar esošu kontu vai izveidojiet jaunu lietotāju.');
+        return;
+      }
+
       if (title.length < 3) {
         setFieldError(titleInput, true);
         setResult(result, false, 'Kļūda: virsrakstam jābūt vismaz 3 simboli.');
@@ -322,11 +585,6 @@
       if (content.length < 10) {
         setFieldError(contentInput, true);
         setResult(result, false, 'Kļūda: saturam jābūt vismaz 10 simboli.');
-        return;
-      }
-
-      if (!currentUserId) {
-        setResult(result, false, 'Kļūda: vispirms ienāciet ar esošu kontu vai izveidojiet jaunu lietotāju.');
         return;
       }
 
@@ -343,6 +601,21 @@
 
         if (resp.status === 201) {
           setResult(result, true, 'Ziņa ir veiksmīgi izveidota.');
+          // Parādīt pievienoto ziņu saraksta apakšā
+          try {
+            const post = {
+              id: body && body.id ? body.id : undefined,
+              title: body && (body.title || body.Title) ? (body.title || body.Title) : title,
+              content: body && (body.content || body.body || body.message) ? (body.content || body.body || body.message) : content,
+              userId: body && body.userId ? body.userId : currentUserId,
+              createdAt: body && (body.createdAt || body.created_at || body.created) ? (body.createdAt || body.created_at || body.created) : new Date().toISOString(),
+            };
+            // Atsvaidzināt pirmo lapu, lai lapošanas secība saglabātos
+            try { await loadUserPosts(1); } catch (_e) {}
+            // Notīrīt formu
+            document.getElementById('title').value = '';
+            document.getElementById('content').value = '';
+          } catch (_e) {}
           await writeLog('info', `Izveidota ziņa no lietotāja: ${currentUserEmail || currentUserId}`);
         } else if (resp.status === 400) {
           applyPostServerErrors(body.details || body);

@@ -14,7 +14,7 @@ function resetMockedDatabaseState() {
 
 describe('Users routes integration', () => {
   beforeEach(() => {
-    // Mocked DB isolation: this reset acts as table cleanup between tests.
+    // Mockētās DB izolācija: šis atiestatījums nodrošina testu nošķiršanu.
     resetMockedDatabaseState();
   });
 

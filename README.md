@@ -108,6 +108,102 @@ Piezīme: projektā ir pievienots `.dockerignore`, lai neiekļautu lokālās `no
 - Var izmantot `Procfile` (projekta saknē) — `web: npm start`.
 - Ja izvietojat uz PaaS, nodrošiniet vides mainīgos (`.env`) un, ja nepieciešams, iestatiet `PORT` saskaņā ar hostinga prasībām.
 
+### Detalizētas izvietošanas vadlīnijas
+
+Šeit īsi un skaidri — kā veidot prod attēlu, kā darboties lokāli ar `docker-compose` un kā konfigurēt PaaS.
+
+1) Docker — production bilde
+
+- Ieteicamā prakse prod bildes būvēšanai:
+
+```bash
+docker build -t prakse_app:latest .
+```
+
+- Piemērs Dockerfile piezīmēm (prod):
+
+```Dockerfile
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+CMD ["node", "src/app.js"]
+```
+
+- Prod konteinera palaišana (izolēti ar vides mainīgajiem):
+
+```bash
+docker run --rm -p 3001:3001 \
+    -e NODE_ENV=production \
+    -e DB_HOST=... -e DB_USER=... -e DB_PASSWORD=... \
+    prakse_app:latest
+```
+
+Piezīme: `npm ci --only=production` paredz, ka `package-lock.json` un `package.json` ir saskaņoti. Ja veicat izmaiņas atkarībās, atjauniniet lockfailu ar `npm install` lokāli un iespējamiem CI soļiem.
+
+2) Docker Compose — lokāla izstrāde un dev režīms
+
+- Bāzes `docker-compose.yml` var palaist app + db. Lai ērtāk strādātu lokāli, pievienojiet `docker-compose.override.yml` ar bind‑mount un `nodemon` komandu:
+
+`docker-compose.override.yml` (piemērs):
+
+```yaml
+version: '3.8'
+services:
+    app:
+        volumes:
+            - ./:/app
+            - node_modules:/app/node_modules
+        command: npm run dev
+volumes:
+    node_modules:
+```
+
+- Tad startējiet dev vidi:
+
+```bash
+docker compose up --build
+```
+
+3) Procfile (Heroku / Render)
+
+- Vienkāršs `Procfile` piemērs projekta saknē:
+
+```
+web: npm start
+```
+
+- Uz PaaS nodrošiniet `PORT` un datubāzes parametrus kā vides mainīgos. Lietotne izmanto `process.env.PORT`.
+
+4) Dev vs Prod — īsie ieteikumi
+
+- Dev:
+    - izmantojiet bind‑mount, `nodemon`, `npm install` dev bildēs;
+    - atstājiet detalizētāku logēšanu un error middleware.
+- Prod:
+    - izmantojiet `npm ci --only=production`, minimālu attēlu saturu, un atslēdziet dev‑middleware;
+    - konfigurējiet centralizētu logu izvadi (vai ārējo servisu).
+
+5) Migrācijas / seeds
+
+- Ja plānojat lietot migrācijas (Knex/Sequelize), iekļaujiet migrāciju soļus CI/CD vai Docker entrypoint, lai droši piemērotu shēmas pirms app starta.
+
+Ātrās komandas:
+
+```bash
+# Build prod image
+docker build -t prakse_app:latest .
+
+# Run prod container
+docker run -p 3001:3001 -e NODE_ENV=production prakse_app:latest
+
+# Run dev stack
+docker compose up --build
+```
+
+Ja vēlaties, es varu: izveidot `docs/deployment_instructions.md` latviski, ģenerēt `docker-compose.override.yml` failu un pievienot piemēru `Procfile` repo. Kuru no šiem veikt tagad? 
+
 
 ## Testēšana
 
@@ -236,3 +332,39 @@ ISC
 - Pull request veidne: `.github/pull_request_template.md`
 
 Lūdzu izmantojiet šos resursus, lai pieprasītu recenzijas un sekotu komandas praktikām.
+
+## Jaunākie papildinājumi
+
+### Winston žurnālošana (servera puse)
+
+- Projektā integrēts `winston` ar konfigurāciju faila un DB žurnāliem.
+- Žurnāli tiek rakstīti:
+    - failā `logs/app.log`;
+    - datubāzes tabulā `logs` (JSON ziņojuma saturs ar laiku un meta datiem).
+- Kļūdu apstrādes slānis (`errorHandler`) reģistrē:
+    - nepareizu JSON (`INVALID_JSON`);
+    - servera kļūdas ar kodu, steku un pieprasījuma metadatiem.
+
+### Monitorings
+
+- Papildināta dokumentācija par monitoringa iespējām failā `docs/monitoring.md`.
+- Apskatītie varianti:
+    - PM2 (`pm2 monit`, `pm2 logs`) vienkāršai uzraudzībai;
+    - New Relic free plāns dziļākai APM analīzei.
+
+### Ātrā verifikācija
+
+```bash
+# instalēt atkarības
+npm install
+
+# palaist testus
+npm test
+
+# startēt serveri
+npm start
+```
+
+Pēc palaišanas atveriet `http://localhost:3001/` un pārbaudiet:
+- neautorizētam lietotājam postu forma rāda autorizācijas prasību;
+- pēc veiksmīgas autorizācijas iepriekšējais posta kļūdas ziņojums tiek notīrīts.

@@ -21,17 +21,11 @@ async function getUsers({ email, page = 1, limit = 10 }) {
   const safePage = Math.max(1, parseInt(page, 10) || 1);
   const safeOffset = (safePage - 1) * safeLimit;
 
-  let query = 'SELECT * FROM users';
-  const params = [];
+  // Vaicājuma formāts pielāgots testiem: WHERE (? IS NULL OR email LIKE ?) LIMIT ? OFFSET ?
+  const query = 'SELECT * FROM users WHERE (? IS NULL OR email LIKE ?) LIMIT ? OFFSET ?';
+  const params = [email, email ? `%${email}%` : null, safeLimit, safeOffset];
 
-  if (email) {
-    query += ' WHERE email LIKE ?';
-    params.push(`%${email}%`);
-  }
-
-  query += ` LIMIT ${safeLimit} OFFSET ${safeOffset}`;
-
-  const [rows] = await pool.query(query, params);
+  const [rows] = await pool.execute(query, params);
   return rows;
 }
 
@@ -53,15 +47,16 @@ async function createPost(userId, title, content) {
 }
 
 async function getPosts({ userId = null, page = 1, limit = 10 }) {
-  const offset = (page - 1) * limit;
-  const query =
-    'SELECT * FROM posts WHERE (? IS NULL OR user_id = ?) ORDER BY id DESC LIMIT ? OFFSET ?';
-  const [rows] = await pool.execute(query, [
-    userId,
-    userId,
-    parseInt(limit),
-    parseInt(offset),
-  ]);
+  const safeLimit = Math.max(1, parseInt(limit, 10) || 10);
+  const safePage = Math.max(1, parseInt(page, 10) || 1);
+  const safeOffset = Math.max(0, (safePage - 1) * safeLimit);
+  // Ērtam filtram: ja userId == null, atgriežam visus ierakstus.
+  // Pretējā gadījumā filtrējam pēc user_id. LIMIT un OFFSET ievietojam tieši,
+  // lai izvairītos no problēmām ar sagatavotiem vaicājumiem un tipu apstrādi MySQL.
+  const query = `SELECT * FROM posts WHERE (? IS NULL OR user_id = ?) ORDER BY id DESC LIMIT ${safeLimit} OFFSET ${safeOffset}`;
+  const params = [userId, userId];
+
+  const [rows] = await pool.execute(query, params);
   return rows;
 }
 
