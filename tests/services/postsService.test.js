@@ -39,8 +39,8 @@ describe('DB post functions', () => {
 
     expect(result).toEqual(rows);
     expect(mockExecute).toHaveBeenCalledWith(
-      'SELECT * FROM posts WHERE (? IS NULL OR user_id = ?) ORDER BY id DESC LIMIT ? OFFSET ?',
-      [2, 2, 4, 8]
+      'SELECT * FROM posts WHERE (? IS NULL OR user_id = ?) ORDER BY id DESC LIMIT 4 OFFSET 8',
+      [2, 2]
     );
   });
 

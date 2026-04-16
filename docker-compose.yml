@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: prakse_db
+      MYSQL_USER: prakse_user
+      MYSQL_PASSWORD: prakse_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: prakse_user
+      DB_PASS: prakse_pass
+      DB_NAME: prakse_db
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./:/app
+      - node_modules:/app/node_modules
+    command: npm run dev
+
+volumes:
+  db_data:
+  node_modules:

@@ -23,23 +23,23 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (public) so forms can post to same origin
+// Apkalpo statiskos failus (`public`), lai formas varētu sūtīt uz to pašu izcelsmi
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// Health check endpoint
+// Veselības pārbaudes maršruts
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Routes
+// Maršruti
 app.use(usersRouter);
 app.use(postsRouter);
 app.use(logsRouter);
 
-// Error handling middleware
+// Kļūdu apstrādes starpprogrammatūra
 app.use(errorHandler);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 if (require.main === module) {
   app.listen(PORT, () => {

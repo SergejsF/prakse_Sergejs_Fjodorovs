@@ -7,13 +7,13 @@ const {
 
 const router = express.Router();
 
-// POST /users
+// POST /users — izveidot jaunu lietotāju
 router.post('/users', createUserController);
 
-// GET /users
+// GET /users — iegūt lietotāju sarakstu
 router.get('/users', listUsersController);
 
-// POST /login
+// POST /login — pieslēgt lietotāju
 router.post('/login', loginUserController);
 
 module.exports = router;

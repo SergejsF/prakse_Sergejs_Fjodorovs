@@ -45,6 +45,9 @@ p.sub {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
+/* Neļaut režģa elementiem stiepties, lai atbilstu augstākajam elementam */
+.grid { align-items: start; }
+
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -52,6 +55,18 @@ p.sub {
   padding: 16px;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
 }
+
+/* Saglabāt reģistrācijas un pieteikšanās kartes vizuālo stabilitāti, kad cits saturs paplašinās */
+.fixedCard {
+  height: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* Ļaut absolūtajiem bērniem (izejas poga) tikt pozicionētiem attiecībā pret karti */
+.card { position: relative; }
 
 h2 {
   margin: 0 0 12px;
@@ -130,10 +145,82 @@ button[disabled] {
   font-size: 14px;
 }
 
+
+/* Īpaša klase, lai tekstu padarītu sarkanu uz pieprasījuma */
+.result.manual-red {
+  color: #c00;
+}
 .authState {
   margin-top: 6px;
   font-size: 14px;
   color: var(--muted);
+}
+
+.loginGreeting {
+  display: none;
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.postsList {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.postItem {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.postMeta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.postTitle {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.postContent {
+  white-space: pre-wrap;
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.postContent.collapsed {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  padding: 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Izejas poga pozicionēta pieteikšanās kartē (kartes apakšējā labajā stūrī) */
+#logoutBtnInline {
+  position: absolute;
+  right: 16px;
+  bottom: 24px;
+  z-index: 1200;
+  background: #52606d;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.12);
 }
 
 .rowActions {
@@ -155,4 +242,5 @@ button[disabled] {
   .grid { grid-template-columns: 1fr; }
   .card { padding: 14px; }
   .rowActions button { width: 100%; }
+  .fixedCard { height: auto; overflow: visible; }
 }

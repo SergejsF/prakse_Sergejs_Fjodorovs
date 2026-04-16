@@ -3,9 +3,10 @@ FROM node:18-alpine
 # Darba direktorija iestatīšana
 WORKDIR /app
 
-# Kopē tikai package failus un uzstāda atkarības
+# Kopē tikai package failus un uzstāda atkarības (iekļauj dev dependences, nodemon nepieciešams dev režīmā)
 COPY package*.json ./
-RUN npm ci --only=production
+# Izmantojam npm install vietā npm ci, lai izstrādes attēlā nebūtu jāprasa lockfailu sinhronizācija
+RUN npm install
 
 # Kopē pārējo projekta saturu
 COPY . .
