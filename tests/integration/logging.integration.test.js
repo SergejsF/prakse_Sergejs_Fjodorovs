@@ -68,9 +68,11 @@ describe('Logging integration', () => {
     const call = db.createLog.mock.calls[0];
     const stored = JSON.parse(call[1]);
     expect(stored).toHaveProperty('timestamp');
-    expect(stored).toHaveProperty('message');
+    expect(stored.message).toBe('Server error');
     expect(stored).toHaveProperty('meta');
     // Meta laukā tiek nodota pieprasījuma informācija
     expect(stored.meta).toBeDefined();
+    expect(stored.meta.errorMessage).toBe('db fail');
+    expect(stored.code).toBe('ER_CUSTOM');
   });
 });

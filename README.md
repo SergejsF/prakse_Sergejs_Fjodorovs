@@ -211,7 +211,7 @@ Ja vēlaties, es varu: izveidot `docs/deployment_instructions.md` latviski, ģen
 npm test -- --silent
 ```
 
-Kopumā 37 testi, kas pārbauda validāciju, servisa slāni, maršrutus un middleware.
+Kopumā 39 testi, kas pārbauda validāciju, servisa slāni, maršrutus un middleware.
 
 ## API Endpoints
 
@@ -333,7 +333,7 @@ ISC
 
 Lūdzu izmantojiet šos resursus, lai pieprasītu recenzijas un sekotu komandas praktikām.
 
-## Jaunākie papildinājumi
+
 
 ### Winston žurnālošana (servera puse)
 

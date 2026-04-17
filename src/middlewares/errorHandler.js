@@ -6,25 +6,35 @@ function errorHandler(err, req, res, next) {
   }
 
   const requestInfo = req ? `${req.method} ${req.originalUrl || req.url || ''}`.trim() : 'nezināms pieprasījums';
+  const requestMeta = {
+    method: req && req.method,
+    url: req && (req.originalUrl || req.url),
+  };
 
   // Ja nepareizs JSON pieprasījums
   const isInvalidJson = !!(
     err && (
       err.type === 'entity.parse.failed' ||
-      err.status === 400 ||
-      err.statusCode === 400
+      ((err instanceof SyntaxError || err.name === 'SyntaxError') && err.status === 400)
     )
   );
 
   if (isInvalidJson) {
-    const meta = { code: 'INVALID_JSON', request: { method: req && req.method, url: req && (req.originalUrl || req.url) }, body: req && req.body };
+    const meta = { code: 'INVALID_JSON', request: requestMeta, body: req && req.body };
     logger.error('Invalid JSON received', { code: 'INVALID_JSON', meta, stack: err.stack });
     console.error(`[ERROR] ${requestInfo}`, err);
     return res.status(400).json({ error: 'NEPAREIZA_JSON' });
   }
 
   // Vispārējas kļūdas — reģistrējam žurnālā un atgriežam generisku ziņu lietotājam
-  logger.error('Server error', { code: err && err.code, message: err && err.message, stack: err && err.stack, request: { method: req && req.method, url: req && (req.originalUrl || req.url) } });
+  logger.error('Server error', {
+    code: err && err.code,
+    stack: err && err.stack,
+    meta: {
+      errorMessage: err && err.message,
+      request: requestMeta,
+    },
+  });
   console.error(`[ERROR] ${requestInfo}`, err);
   return res.status(500).json({ error: 'Iekšēja servera kļūda' });
 }
